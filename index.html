@@ -94,3 +94,14 @@ const timer = setInterval(() => {
 </script>
 </body>
 </html>
+<div id="counter" style="position:fixed;bottom:10px;right:10px;font-family:KaiTi;font-size:16px;color:#555;">
+  👀 已被访问 <span id="count">0</span> 次
+</div>
+
+<script>
+fetch('https://api.countapi.xyz/hit/你的GitHub用户名-love-for-sis/visits')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('count').innerText = data.value;
+  });
+</script>
