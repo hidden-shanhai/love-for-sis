@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>给姐姐的小心意 💌</title>
 <style>
   body {
     background-color: #fff8f0;
     overflow: hidden;
     margin: 0;
+    font-family: "KaiTi","楷体",sans-serif;
   }
   .popup {
     position: absolute;
     padding: 10px 20px;
     border-radius: 16px;
-    font-family: "KaiTi", "楷体", sans-serif;
     font-size: 18px;
     text-align: center;
     color: #333;
@@ -22,11 +22,35 @@
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.6s ease;
+    white-space: nowrap;
+  }
+  /* 计数器样式（固定右下） */
+  #counter {
+    position: fixed;
+    right: 14px;
+    bottom: 12px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 14px;
+    color: #444;
+    z-index: 9999;
   }
 </style>
 </head>
 <body>
+<!-- 页面内容由脚本动态生成 -->
+<div id="counter">👀 已被访问 <span id="count">...</span> 次</div>
+
 <script>
+// === 配置（请把下面替换成你的 GitHub 用户名和仓库名） ===
+const GITHUB_USER = "YOUR_GITHUB_USERNAME"; // 例如：pengyuyan
+const REPO_NAME = "YOUR_REPO_NAME";        // 例如：love-for-sis
+// 构造 countapi 的命名空间与 key（只要英文、无空格）：
+const namespace = `${GITHUB_USER}-${REPO_NAME}`;
+const key = "visits";
+
 // 温暖、轻柔的小句子，专属姐姐 💕
 const quotes = [
   "姐，今天也要开心呀~",
@@ -67,14 +91,16 @@ function createPopup() {
   popup.innerText = quotes[Math.floor(Math.random() * quotes.length)];
   popup.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-  const x = Math.random() * (window.innerWidth - 160);
-  const y = Math.random() * (window.innerHeight - 60);
+  const w = Math.max(window.innerWidth, 300);
+  const h = Math.max(window.innerHeight, 200);
+  const x = Math.random() * (w - 160);
+  const y = Math.random() * (h - 60);
   popup.style.left = x + "px";
   popup.style.top = y + "px";
+  popup.style.zIndex = 9998;
 
   document.body.appendChild(popup);
-
-  // 动画显示
+  // 动画入场
   setTimeout(() => {
     popup.style.opacity = 1;
     popup.style.transform = "scale(1)";
@@ -83,25 +109,54 @@ function createPopup() {
   return popup;
 }
 
-// 每 0.2 秒弹出一个
-let count = 0;
-const total = 80;
-const timer = setInterval(() => {
+// 每 0.2 秒弹出一个，总共 30 个（你可修改 total）
+let countPop = 0;
+const total = 65;
+const intervalMs = 50;
+const popTimer = setInterval(() => {
   createPopup();
-  count++;
-  if (count >= total) clearInterval(timer);
-}, 50);
+  countPop++;
+  if (countPop >= total) clearInterval(popTimer);
+}, intervalMs);
+
+// ========== countapi 计数逻辑 ==========
+// 使用 countapi 的 hit 接口，每次页面打开会 +1，并返回当前值。
+// endpoint: https://api.countapi.xyz/hit/{namespace}/{key}
+function hitCountApi() {
+  const url = `https://api.countapi.xyz/hit/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      if (data && typeof data.value !== "undefined") {
+        document.getElementById("count").innerText = data.value;
+      } else {
+        document.getElementById("count").innerText = "—";
+      }
+    })
+    .catch(err => {
+      console.warn("countapi 请求失败：", err);
+      document.getElementById("count").innerText = "—";
+    });
+}
+
+// 页面加载时调用一次（访问计数）
+hitCountApi();
+
+// 可选：每隔一段时间刷新最新值（不再 +1），用 get 接口：
+// GET https://api.countapi.xyz/get/{namespace}/{key}
+// 下面示例每 60 秒刷新一次显示（不会增加计数）
+function refreshCountDisplay() {
+  const url = `https://api.countapi.xyz/get/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      if (data && typeof data.value !== "undefined") {
+        document.getElementById("count").innerText = data.value;
+      }
+    })
+    .catch(() => {});
+}
+setInterval(refreshCountDisplay, 60 * 1000);
 </script>
 </body>
 </html>
-<div id="counter" style="position:fixed;bottom:10px;right:10px;font-family:KaiTi;font-size:16px;color:#555;">
-  👀 已被访问 <span id="count">0</span> 次
-</div>
-
-<script>
-fetch('https://api.countapi.xyz/hit/你的GitHub用户名-love-for-sis/visits')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('count').innerText = data.value;
-  });
-</script>
