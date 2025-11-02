@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给姐姐的小心意 💌</title>
+<style>
+  body {
+    background-color: #fff8f0;
+    overflow: hidden;
+    margin: 0;
+  }
+  .popup {
+    position: absolute;
+    padding: 10px 20px;
+    border-radius: 16px;
+    font-family: "KaiTi", "楷体", sans-serif;
+    font-size: 18px;
+    text-align: center;
+    color: #333;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.6s ease;
+  }
+</style>
+</head>
+<body>
+<script>
+// 温暖、轻柔的小句子，专属姐姐 💕
+const quotes = [
+  "姐，今天也要开心呀~",
+  "你笑起来真好看 🌸",
+  "要记得多休息哦~",
+  "别太累了，我会心疼的",
+  "有你在，家都亮了✨",
+  "世界因为你更温柔",
+  "姐姐最棒啦 💪",
+  "你的小弟很想你",
+  "希望每天你都顺心",
+  "风都变甜了，因为你呀 🍃",
+  "姐姐，早点睡觉哦~",
+  "愿你所有努力都有回报",
+  "一直喜欢你的温柔",
+  "阳光和你都刚刚好 ☀️",
+  "今天也要元气满满 💗",
+  "我永远为你加油！",
+  "生活有你真幸福",
+  "笑一笑，一切都会好～",
+  "愿你每天都有好心情 🎈",
+  "姐姐最闪亮 ✨",
+  "有空多联系我呀 🧡",
+  "希望你天天被温柔包围",
+  "你的微笑是我的能量 💫",
+  "姐姐是我永远的榜样",
+  "有姐姐真好！"
+];
+
+const colors = [
+  "#ffb6c1", "#fddde6", "#ffe4b5", "#b0e0e6", "#d8bfd8",
+  "#f0e68c", "#e6e6fa", "#faf0e6", "#add8e6", "#ffc0cb"
+];
+
+function createPopup() {
+  const popup = document.createElement("div");
+  popup.className = "popup";
+  popup.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+  popup.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+  const x = Math.random() * (window.innerWidth - 160);
+  const y = Math.random() * (window.innerHeight - 60);
+  popup.style.left = x + "px";
+  popup.style.top = y + "px";
+
+  document.body.appendChild(popup);
+
+  // 动画显示
+  setTimeout(() => {
+    popup.style.opacity = 1;
+    popup.style.transform = "scale(1)";
+  }, 100);
+
+  return popup;
+}
+
+// 每 0.2 秒弹出一个
+let count = 0;
+const total = 80;
+const timer = setInterval(() => {
+  createPopup();
+  count++;
+  if (count >= total) clearInterval(timer);
+}, 50);
+</script>
+</body>
+</html>
